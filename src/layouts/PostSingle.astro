@@ -10,7 +10,7 @@ import { humanize, markdownify, slugifyTitle } from "@/lib/utils/textConverter";
 import { render } from "astro:content";
 import { FaRegClock, FaRegFolder, FaRegUserCircle } from "react-icons/fa";
 import ImageMod from "@/components/ImageMod.astro";
-import PostSidebar from "@/layouts/partials/PostSidebar.astro"; 
+import PostSidebar from "@/layouts/partials/PostSidebar.astro";
 
 const COLLECTION_FOLDER = "blog";
 const { post } = Astro.props;
@@ -20,38 +20,22 @@ const similarPosts = similarItems(post, posts);
 const { Content } = await render(post);
 const { title, description, author, category, image, date, tags } = post.data;
 
-// 🚀 修复：统一分类数据源
-const allCategoryNames = await getTaxonomy(COLLECTION_FOLDER, "category"); 
-
-// 🚀 修复：创建分类计数对象
-const categoryCounts = {};
-posts.forEach(post => {
-  if (post.data.category) {
-    post.data.category.forEach(cat => {
-      categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
-    });
-  }
-});
-
-// 🚀 修复：准备侧边栏数据
-const sidebarCategories = allCategoryNames.map(cat => ({
-  name: cat,
-  count: categoryCounts[cat] || 0
-}));
+// 🚀 修复：获取分类数据（和其他页面一样的方式）
+const allCategoryNames = await getTaxonomy(COLLECTION_FOLDER, "category");
 ---
 
 <section class="section pt-7">
   <div class="container">
     <div class="row justify-center">
 
-      <article class="lg:col-8 mb-16 lg:mb-0"> 
+      <article class="lg:col-8 mb-16 lg:mb-0">
         {
           image && (
             <div class="mb-10">
               <ImageMod
                 src={image}
                 alt={title}
-                class="w-full rounded h-auto max-h-[80vh] object-cover" 
+                class="w-full rounded h-auto max-h-[80vh] object-cover"
                 format="webp"
               />
             </div>
@@ -60,7 +44,7 @@ const sidebarCategories = allCategoryNames.map(cat => ({
         <h1 set:html={markdownify(title)} class="h2 mb-4" />
         <ul class="mb-4">
           <li class="mr-4 inline-block">
-            <a href={`/authors/${slugifyTitle(author)}`}>  
+            <a href={`/authors/${slugifyTitle(author)}`}>
               <FaRegUserCircle className={"mr-2 -mt-1 inline-block"} />
               {humanize(author)}
             </a>
@@ -68,9 +52,9 @@ const sidebarCategories = allCategoryNames.map(cat => ({
           <li class="mr-4 inline-block">
             <FaRegFolder className={"mr-2 -mt-1 inline-block"} />
             {
-              category.map((category: string, index: number) => (
-                <a href={`/categories/${slugifyTitle(category)}`}>  
-                  {humanize(category)}
+              category.map((cat: string, index: number) => (
+                <a href={`/categories/${slugifyTitle(cat)}`}>
+                  {humanize(cat)}
                   {index !== category.length - 1 && ","}
                 </a>
               ))
@@ -84,7 +68,7 @@ const sidebarCategories = allCategoryNames.map(cat => ({
         <div class="content mb-10">
           <Content />
         </div>
-        
+
         <div class="row items-start justify-between">
           <div class="mb-10 flex items-center lg:col-5 lg:mb-0">
             <h5 class="mr-3">标签 :</h5>
@@ -117,10 +101,11 @@ const sidebarCategories = allCategoryNames.map(cat => ({
       </article>
 
       <div class="lg:col-4">
-        <PostSidebar 
-            tags={tags} 
-            // 🚀 修复：传递统一格式的分类数据
-            category={sidebarCategories}
+        {/* 🚀 修复：传递正确的参数格式 */}
+        <PostSidebar
+          tags={tags}
+          category={category}              {/* ✅ 文章本身的分类数组 */}
+          allCategories={allCategoryNames} {/* ✅ 用于计数的全部分类 */}
         />
       </div>
 
