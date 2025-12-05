@@ -1,51 +1,8 @@
 ---
-import { humanize, slugifyTitle } from "@/lib/utils/textConverter";
+import { humanize } from "@/lib/utils/textConverter";
 
 // 确保所有props都有默认值
-const { tags = [], category = [], allCategories = [] } = Astro.props; 
-
-// 🚀 核心修复：智能处理 category 数据格式
-const processCategories = () => {
-  if (!category || category.length === 0) return [];
-  
-  // 情况1：已经是字符串数组 ["动漫", "观影指南"]
-  if (typeof category[0] === 'string') {
-    return category.map(cat => ({
-      name: cat,
-      slug: slugifyTitle(cat)
-    }));
-  }
-  
-  // 情况2：对象数组 [{name: "...", count: 0}]
-  if (typeof category[0] === 'object' && category[0].name) {
-    return category.map(item => ({
-      name: item.name,
-      slug: slugifyTitle(item.name)
-    }));
-  }
-  
-  return [];
-};
-
-// 🚀 核心修复：智能计算分类数量
-const calculateCategoryCounts = () => {
-  const counts = {};
-  const processedCats = processCategories();
-  
-  if (processedCats.length === 0) return counts;
-  
-  // 使用 allCategories 或当前 categories 来计算
-  const sourceForCounting = allCategories.length > 0 ? allCategories : processedCats.map(c => c.name);
-  
-  sourceForCounting.forEach(cat => {
-    counts[cat] = (counts[cat] || 0) + 1;
-  });
-  
-  return counts;
-};
-
-const processedCategories = processCategories();
-const categoryCounts = calculateCategoryCounts();
+const { tags = [], category = [], allCategories = [] } = Astro.props;
 ---
 
 <div class="lg:col-4">
@@ -54,26 +11,21 @@ const categoryCounts = calculateCategoryCounts();
     <div class="rounded bg-light p-8 dark:bg-darkmode-light">
       <ul class="space-y-4">
         {
-          processedCategories.length > 0 && processedCategories.map((cat) => { 
-            const count = categoryCounts[cat.name] || 0;
+          category.length > 0 && category.map((cat: string) => {
+            const count = allCategories.filter(
+              (c: string) => c === cat
+            ).length;
             return (
               <li>
                 <a
                   class="flex justify-between hover:text-primary dark:hover:text-darkmode-primary"
-                  href={`/categories/${cat.slug}`}
+                  href={`/categories/${cat}`}
                 >
-                  {humanize(cat.name)} <span>({count})</span>
+                  {humanize(cat)} <span>({count})</span>
                 </a>
               </li>
             );
           })
-        }
-        {
-          processedCategories.length === 0 && (
-            <li class="text-text-light dark:text-darkmode-text-light">
-              暂无分类
-            </li>
-          )
         }
       </ul>
     </div>
@@ -89,20 +41,13 @@ const categoryCounts = calculateCategoryCounts();
               <li class="inline-block">
                 <a
                   class="m-1 block rounded bg-white px-3 py-1 hover:bg-primary hover:text-white dark:bg-darkmode-body dark:hover:bg-darkmode-primary dark:hover:text-text-dark"
-                  href={`/tags/${slugifyTitle(tag)}`}
+                  href={`/tags/${tag}`}
                 >
                   {humanize(tag)}
                 </a>
               </li>
             );
           })
-        }
-        {
-          tags.length === 0 && (
-            <li class="text-text-light dark:text-darkmode-text-light">
-              暂无标签
-            </li>
-          )
         }
       </ul>
     </div>
