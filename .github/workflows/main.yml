@@ -20,6 +20,7 @@ jobs:
           #cache: yarn 
 
       - name: Install dependencies
+        yarn config set registry https://registry.npmmirror.com/
         run: yarn install
 
       - name: Build project
