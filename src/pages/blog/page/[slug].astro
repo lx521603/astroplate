@@ -8,7 +8,6 @@ import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.js";
 import { sortByDate } from "@/lib/utils/sortFunctions";
 import PageHeader from "@/partials/PageHeader.astro";
 import PostSidebar from "@/layouts/partials/PostSidebar.astro";
-// 🌟 导入 slugifyTitle，以防 TaxoonomyParser 需要它
 import { slugifyTitle } from "@/lib/utils/textConverter"; 
 
 const BLOG_FOLDER = "blog";
@@ -21,9 +20,9 @@ if (postIndex.data.draft) {
 }
 
 const posts = await getSinglePage(BLOG_FOLDER);
-// 假设 taxonomyParser.astro 内部已修复，使用 "categories" 和 "tags" 字段名
-const allCategories = await getAllTaxonomy(BLOG_FOLDER, "categories"); 
-const categories = await getTaxonomy(BLOG_FOLDER, "categories");
+// 🚀 修复：统一使用 "category" 而不是 "categories"
+const allCategories = await getAllTaxonomy(BLOG_FOLDER, "category"); 
+const categories = await getTaxonomy(BLOG_FOLDER, "category"); // 🚀 修复：改成 category
 const tags = await getTaxonomy(BLOG_FOLDER, "tags");
 
 const sortedPosts = sortByDate(posts);
@@ -49,7 +48,6 @@ export async function getStaticPaths() {
   return paths;
 }
 
-// 🌟 中文化修正：确保 PageHeader 标题显示 "博客" 而不是 slug
 const pageTitle = postIndex.data.title === "Blog" ? "博客" : postIndex.data.title; 
 ---
 
@@ -59,7 +57,6 @@ const pageTitle = postIndex.data.title === "Blog" ? "博客" : postIndex.data.ti
   image={postIndex.data.image}
   description={postIndex.data.description}
 >
-  {/* 🌟 中文化修正：使用修正后的标题 */}
   <PageHeader title={pageTitle} />
   <section class="section">
     <div class="container">
@@ -81,8 +78,9 @@ const pageTitle = postIndex.data.title === "Blog" ? "博客" : postIndex.data.ti
           />
         </div>
 
+        {/* 🚀 修复：统一参数名 */}
         <PostSidebar
-          categories={categories}
+          category={categories}      {/* 🚀 改成 category */}
           tags={tags}
           allCategories={allCategories}
         />
