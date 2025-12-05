@@ -1,8 +1,51 @@
 ---
-import { humanize } from "@/lib/utils/textConverter";
+import { humanize, slugifyTitle } from "@/lib/utils/textConverter";
 
 // 确保所有props都有默认值
 const { tags = [], category = [], allCategories = [] } = Astro.props; 
+
+// 🚀 核心修复：智能处理 category 数据格式
+const processCategories = () => {
+  if (!category || category.length === 0) return [];
+  
+  // 情况1：已经是字符串数组 ["动漫", "观影指南"]
+  if (typeof category[0] === 'string') {
+    return category.map(cat => ({
+      name: cat,
+      slug: slugifyTitle(cat)
+    }));
+  }
+  
+  // 情况2：对象数组 [{name: "...", count: 0}]
+  if (typeof category[0] === 'object' && category[0].name) {
+    return category.map(item => ({
+      name: item.name,
+      slug: slugifyTitle(item.name)
+    }));
+  }
+  
+  return [];
+};
+
+// 🚀 核心修复：智能计算分类数量
+const calculateCategoryCounts = () => {
+  const counts = {};
+  const processedCats = processCategories();
+  
+  if (processedCats.length === 0) return counts;
+  
+  // 使用 allCategories 或当前 categories 来计算
+  const sourceForCounting = allCategories.length > 0 ? allCategories : processedCats.map(c => c.name);
+  
+  sourceForCounting.forEach(cat => {
+    counts[cat] = (counts[cat] || 0) + 1;
+  });
+  
+  return counts;
+};
+
+const processedCategories = processCategories();
+const categoryCounts = calculateCategoryCounts();
 ---
 
 <div class="lg:col-4">
@@ -11,42 +54,55 @@ const { tags = [], category = [], allCategories = [] } = Astro.props;
     <div class="rounded bg-light p-8 dark:bg-darkmode-light">
       <ul class="space-y-4">
         {
-          category.length > 0 && category.map((cat: any) => { 
-            const count = allCategories.filter(
-              (c: any) => c === cat
-            ).length;
+          processedCategories.length > 0 && processedCategories.map((cat) => { 
+            const count = categoryCounts[cat.name] || 0;
             return (
               <li>
                 <a
                   class="flex justify-between hover:text-primary dark:hover:text-darkmode-primary"
-                  href={`/categories/${cat}`}
+                  href={`/categories/${cat.slug}`}
                 >
-                  {humanize(cat)} <span>({count})</span>
+                  {humanize(cat.name)} <span>({count})</span>
                 </a>
               </li>
             );
           })
         }
+        {
+          processedCategories.length === 0 && (
+            <li class="text-text-light dark:text-darkmode-text-light">
+              暂无分类
+            </li>
+          )
+        }
       </ul>
     </div>
   </div>
+  
   <div class="mb-8">
     <h5 class="mb-6">标签</h5>
     <div class="rounded bg-light p-6 dark:bg-darkmode-light">
       <ul>
         {
-          tags.length > 0 && tags.map((tag: any) => {
+          tags.length > 0 && tags.map((tag: string) => {
             return (
               <li class="inline-block">
                 <a
                   class="m-1 block rounded bg-white px-3 py-1 hover:bg-primary hover:text-white dark:bg-darkmode-body dark:hover:bg-darkmode-primary dark:hover:text-text-dark"
-                  href={`/tags/${tag}`}
+                  href={`/tags/${slugifyTitle(tag)}`}
                 >
                   {humanize(tag)}
                 </a>
               </li>
             );
           })
+        }
+        {
+          tags.length === 0 && (
+            <li class="text-text-light dark:text-darkmode-text-light">
+              暂无标签
+            </li>
+          )
         }
       </ul>
     </div>
