@@ -1,9 +1,9 @@
 ---
 # Banner
 banner:
-  title: "标题建设中"
-  content: "内容建设中"
-  image: "https://img.sorayt.cn/f/v0h6/DSC00763.BnP4sFeo.jpg"
+  title: "Ouro Life"
+  content: "吃喝玩乐"
+  image: "https://img.sorayt.cn/f/W3SR/DSC01746.webp"
   button:
     enable: true
     label: "Sai"
@@ -11,8 +11,8 @@ banner:
 
 # Features
 features:
-  - title: "测试Features"
-    image: "https://img.sorayt.cn/f/v0h6/DSC00763.BnP4sFeo.jpg"
+  - title: "芒市街拍"
+    image: "https://img.sorayt.cn/f/xWhl/DSC00961.webp"
     content: "Astroplate is a comprehensive starter template that includes everything you need to get started with your Astro project. What's Included in Astroplate"
     bulletpoints:
       - "测试"
@@ -26,8 +26,8 @@ features:
       label: "马上开始"
       link: "#"
 
-  - title: "测试下半部分"
-    image: "https://img.sorayt.cn/f/v0h6/DSC00763.BnP4sFeo.jpg"
+  - title: "芒市孔雀湖"
+    image: "https://img.sorayt.cn/f/d3f6/DSC01231.webp"
     content: "Astro is an all-in-one web framework for building fast, content-focused websites. It offers a range of exciting features for developers and website creators. Some of the key features are:"
     bulletpoints:
       - "Zero JS, by default: No JavaScript runtime overhead to slow you down."
@@ -38,8 +38,8 @@ features:
       label: "Get Started Now"
       link: "https://sai.st"
 
-  - title: "测试第三部分"
-    image: "https://img.sorayt.cn/f/v0h6/DSC00763.BnP4sFeo.jpg"
+  - title: "敬请期待"
+    image: "https://img.sorayt.cn/f/X3tx/DSC01344.webp"
     content: "With Astro, you can build modern and content-focused websites without sacrificing performance or ease of use."
     bulletpoints:
       - "Instantly load static sites for better user experience and SEO."
